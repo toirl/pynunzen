@@ -24,7 +24,7 @@ Pynunzen
 
 Pynunzen is a simple python based implementation of a blockchain for primarly
 educational purposes. It implements a very simple and naiv blockchain and 
-leaves out any security and cryptographic details.
+leaves out all security and cryptographic details.
 
 * Free software: MIT license
 * Documentation: https://pynunzen.readthedocs.io.
@@ -33,7 +33,13 @@ leaves out any security and cryptographic details.
 Features
 --------
 
-* TODO
+* Simple object oriented blockchain model.
+
+Planned
+-------
+
+* Nodes based on websockets.
+* Sample application based on the blockchain.
 
 Credits
 ---------

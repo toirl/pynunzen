@@ -35,4 +35,4 @@ def test_generate_block_address():
     parent = "parent"
     data = "My data"
     address = pynunzen.generate_block_address(index, timestamp, parent, data)
-    assert address == "7474c2d9971595ba2283d240b5696261921b0533f3000fef1f43861450d97a67"
+    assert address == "d93ce3d3e027e6f02c39e8aa332c7e0bc30df6bafb06a211cf7fa805aeb26702"

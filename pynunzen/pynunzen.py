@@ -22,7 +22,8 @@ def generate_block_address(index, timestamp, parent, data):
 
     """
     address = hashlib.sha256()
-    address.update(bytes(index) + bytes(timestamp) + bytes(parent.encode("utf8")) + bytes(str(data).encode("utf8")))
+    hash_source = str(index) + str(timestamp) + str(parent) + str(data)
+    address.update(bytes(hash_source.encode("utf8")))
     return address.hexdigest()
 
 

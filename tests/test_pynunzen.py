@@ -20,12 +20,13 @@ def test_utcts():
     utcts = pynunzen.utcts(dt)
     assert utcts == 1483272000
 
+
 def test_utcts_fail():
     dt = datetime.datetime(2017, 1, 1, 12, 0, 0)
-    mytz = pytz.timezone('Europe/Amsterdam')             ## Set your timezone
-    dt = mytz.normalize(mytz.localize(dt, is_dst=True))  ## Set is_dst accordingly
+    mytz = pytz.timezone('Europe/Amsterdam')
+    dt = mytz.normalize(mytz.localize(dt, is_dst=True))
     with pytest.raises(ValueError):
-        utcts = pynunzen.utcts(dt)
+        pynunzen.utcts(dt)
 
 
 def test_generate_block_address():

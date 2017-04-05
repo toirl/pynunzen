@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import calendar
 import hashlib
 
@@ -27,22 +28,69 @@ def generate_block_address(index, timestamp, parent, data):
     return address.hexdigest()
 
 
+def generate_genesis_block():
+    """Will return a block instance for the very first block in the blockchain.
+
+    :returns: :class:`Block`
+    """
+    index = 1
+    timestamp = utcts(datetime.datetime(2017, 4, 5, 18, 0, 0))
+    address = "235646d62fb74fd390c67795cc94d90f3fb94691f03a9265d573d12684ab98ec"
+    data = "Hello Blockchain!"
+    return Block(index, timestamp, None, data, address)
+
+
+def generate_new_block(blockchain, data):
+    """Will return a new block for the given blockchain. The block can
+    than be added to the blockchain.
+
+    :blockchain: :class:`Blockchain` instance
+    :data: Payload of the Block
+    :returns: class:`Block` instance
+
+    """
+    block = blockchain.end
+    index = block.index + 1
+    timestamp = utcts(datetime.datetime.utcnow())
+    parent = block.address
+    return Block(index, timestamp, parent, data)
+
+
 class Block(object):
 
     """Single block in a blockchain. A block can store various
     informations within the data attribute. Each block is linked to its
     previous block. This links build up the blockchain."""
 
-    def __init__(self, index, timestamp, parent, data):
+    def __init__(self, index, timestamp, parent, data, address=None):
         """TODO: to be defined1. """
 
         self.index = index
         """A simple index of the block"""
         self.timestamp = timestamp
         """UTC timestamp"""
-        self.address = generate_block_address(index, timestamp, parent, data)
+        if address is None:
+            address = generate_block_address(index, timestamp, parent, data)
+        self.address = address
         """SHA256 hash build over other fields of this block"""
-        self.parent = None
+        self.parent = parent
         """References the address of the previous Block in the blockchain."""
-        self.data = None
+        self.data = data
         """Holds the data oft the block. Can be anything."""
+
+
+class Blockchain(object):
+
+    """Blockchain. Will hold a list of Blocks"""
+
+    def __init__(self):
+        self.blocks = [generate_genesis_block()]
+
+    @property
+    def end(self):
+        """Will return the last block of the blockchain
+
+        :returns: :class:`Block` instance
+
+        """
+        return self.blocks[-1]

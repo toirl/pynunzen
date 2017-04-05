@@ -18,8 +18,9 @@ Pynunzen
      :alt: Updates
 
 
-Pynunzen is a simple python based implementation of a blockchain.
-
+Pynunzen is a simple python based implementation of a blockchain for primarly
+educational purposes. It implements a very simple and naiv implementation of a
+blockchain and leaves out any security and cryptographic details.
 
 * Free software: MIT license
 * Documentation: https://pynunzen.readthedocs.io.
@@ -33,8 +34,9 @@ Features
 Credits
 ---------
 
+Pynunzen is inspired by the naivechain_ implementation of lhartikk.
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-
+.. _naivechain: https://github.com/lhartikk/naivechain

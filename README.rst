@@ -8,6 +8,10 @@ Pynunzen
 
 .. image:: https://img.shields.io/travis/toirl/pynunzen.svg
         :target: https://travis-ci.org/toirl/pynunzen
+     
+.. image:: https://api.codacy.com/project/badge/Grade/951f45294d614c308d21910a935cbe47    
+     :target:  https://www.codacy.com/app/torsten/pynunzen
+     :alt: Code quality
 
 .. image:: https://readthedocs.org/projects/pynunzen/badge/?version=latest
         :target: https://pynunzen.readthedocs.io/en/latest/?badge=latest

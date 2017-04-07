@@ -65,25 +65,53 @@ def generate_new_block(blockchain, data):
 
 class Block(object):
 
-    """Single block in a blockchain. A block can store various
-    informations within the data attribute. Each block is linked to its
-    previous block. This links build up the blockchain."""
+    """Single block in a blockchain. A block is a container data
+    structure that holds all transactions/data for inclusion in the
+    blockchain.
+
+    The block header consists a reference to a previous block hash,
+    which links the block to block in the blockchain.  Further there are
+    some fields related to the mining like difficulty, timestamp, and
+    nonce.  The last part is the merke tree root which is used to
+    summarize all transactions or data in the block.
+
+    The header is followed by a long list of transactions/data."""
 
     def __init__(self, index, timestamp, parent, data, address=None):
-        """TODO: to be defined1. """
 
+        #
+        # Header data
+        #
         self.version = __block_version__
         """Version of the block"""
-        self.index = index
-        """A simple index of the block"""
+        # Mining related fields
         self.timestamp = timestamp
-        """UTC timestamp"""
-        if address is None:
-            address = generate_block_address(index, timestamp, parent, data)
-        self.address = address
-        """SHA256 hash build over other fields of this block"""
+        """UTC timestamp when was this block created."""
+        self.difficulty = None
+        self.nonce = None
+
         self.parent = parent
-        """References the address of the previous Block in the blockchain."""
+        """References the address of the previous Block in the
+        blockchain."""
+        #  TODO: Implement merkle tree. (ti) <2017-04-07 16:01>
+        self.merkle_tree = None
+        """Merkle tree to summarize all data in the block"""
+
+        # Block identification. Please note that in reality the index
+        # and address usually not stored in the block or transmitted on
+        # the network. The get recalculated on the node.  However we
+        # will store those data in the block to have them available.
+        #
+        self.index = index
+        """A simple index of the block also know as the `Block Height`"""
+        if address is None:
+            address = generate_block_address(index, self.timestamp, self.parent, data)
+        self.address = address
+        """A double hashed SHA256 build over other fields of this block"""
+
+        #
+        # Block data/transactions
+        #
         self.data = data
         """Holds the data oft the block. Can be anything."""
 

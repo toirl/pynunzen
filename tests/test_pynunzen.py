@@ -47,11 +47,11 @@ def test_generate_block_address():
 
 def test_generate_genesis_block():
     block = pynunzen.generate_genesis_block()
-    assert block.index == 1
+    assert block.index == 0
 
 
 def test_generate_new_block(blockchain):
     block = pynunzen.generate_new_block(blockchain, "Foo")
-    assert block.index == 2
+    assert block.index == 1
     assert block.parent == blockchain.end.address
     assert block.data == "Foo"

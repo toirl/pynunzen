@@ -17,8 +17,8 @@ def utcts(dt):
 
 
 def generate_block_address(index, timestamp, parent, data):
-    """Will calculate a SHA256 hash which will be used as the address of
-    a new created block in the blockchain.
+    """Will calculate a doubled SHA256 hash which will be used as the
+    address of a new created block in the blockchain.
 
     :index: index of the block
     :timestamp: timestamp of the block
@@ -27,10 +27,12 @@ def generate_block_address(index, timestamp, parent, data):
     :returns: SHA256 hash
 
     """
-    address = hashlib.sha256()
     hash_source = str(index) + str(timestamp) + str(parent) + str(data)
-    address.update(bytes(hash_source.encode("utf8")))
-    return address.hexdigest()
+    h1 = hashlib.sha256()
+    h2 = hashlib.sha256()
+    h1.update(hash_source.encode("utf-8"))
+    h2.update(h1.hexdigest().encode("utf-8"))
+    return h2.hexdigest()
 
 
 def generate_genesis_block():

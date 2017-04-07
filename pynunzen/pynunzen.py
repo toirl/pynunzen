@@ -70,9 +70,9 @@ class Block(object):
     blockchain.
 
     The block header consists a reference to a previous block hash,
-    which links the block to block in the blockchain.  Further there are
+    which links the block to block in the blockchain. Further there are
     some fields related to the mining like difficulty, timestamp, and
-    nonce.  The last part is the merke tree root which is used to
+    nonce.  The last part is the merkle tree root which is used to
     summarize all transactions or data in the block.
 
     The header is followed by a long list of transactions/data."""
@@ -98,16 +98,17 @@ class Block(object):
         """Merkle tree to summarize all data in the block"""
 
         # Block identification. Please note that in reality the index
-        # and address usually not stored in the block or transmitted on
-        # the network. The get recalculated on the node.  However we
-        # will store those data in the block to have them available.
-        #
+        # and address of the block is usually not stored in the block or
+        # transmitted on the network. They get recalculated on each node
+        # on the fly. However we will store those data in the block to
+        # have them available.
         self.index = index
         """A simple index of the block also know as the `Block Height`"""
         if address is None:
             address = generate_block_address(index, self.timestamp, self.parent, data)
         self.address = address
-        """A double hashed SHA256 build over other fields of this block"""
+        """Block header hash. A double hashed SHA256 build over fields
+        of the header in the block"""
 
         #
         # Block data/transactions

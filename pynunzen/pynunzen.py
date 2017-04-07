@@ -2,6 +2,7 @@
 import datetime
 import calendar
 import hashlib
+from pynunzen import __blockchain_version__, __block_version__
 
 
 def utcts(dt):
@@ -65,6 +66,8 @@ class Block(object):
     def __init__(self, index, timestamp, parent, data, address=None):
         """TODO: to be defined1. """
 
+        self.version = __block_version__
+        """Version of the block"""
         self.index = index
         """A simple index of the block"""
         self.timestamp = timestamp
@@ -85,6 +88,7 @@ class Blockchain(object):
 
     def __init__(self):
         self.blocks = [generate_genesis_block()]
+        self.version = __blockchain_version__
 
     @property
     def end(self):

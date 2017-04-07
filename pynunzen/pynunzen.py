@@ -142,11 +142,6 @@ class Block(object):
         of the header in the block"""
 
 
-    def add_data(self, data):
-        self.data.append(data)
-        # Recalculate merkle tree 
-
-
 class Blockchain(object):
 
     """Blockchain. Will hold a list of Blocks"""

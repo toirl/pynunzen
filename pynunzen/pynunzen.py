@@ -66,7 +66,7 @@ def generate_genesis_block():
     index = 0
     timestamp = utcts(datetime.datetime(2017, 4, 7, 16, 3, 0))
     address = "f4a3ea59c413e6b470ed12757f3758ad70a4e9bff2954263f22be091871cb499"
-    data = "NY-Times on 7.04.2017: U.S. Strikes Syria Over Chemical Attack"
+    data = ["NY-Times on 7.04.2017: U.S. Strikes Syria Over Chemical Attack"]
     return Block(index, timestamp, None, data, address)
 
 
@@ -103,6 +103,14 @@ class Block(object):
     def __init__(self, index, timestamp, parent, data, address=None):
 
         #
+        # Block data/transactions
+        #
+        if not isinstance(data, list):
+            raise ValueError("Data must be a list")
+        self.data = data
+        """Holds the data oft the block. Data must be a list."""
+
+        #
         # Header data
         #
         self.version = __block_version__
@@ -133,11 +141,10 @@ class Block(object):
         """Block header hash. A double hashed SHA256 build over fields
         of the header in the block"""
 
-        #
-        # Block data/transactions
-        #
-        self.data = data
-        """Holds the data oft the block. Can be anything."""
+
+    def add_data(self, data):
+        self.data.append(data)
+        # Recalculate merkle tree 
 
 
 class Blockchain(object):

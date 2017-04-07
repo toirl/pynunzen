@@ -40,10 +40,10 @@ def generate_genesis_block():
 
     :returns: :class:`Block`
     """
-    index = 1
-    timestamp = utcts(datetime.datetime(2017, 4, 5, 18, 0, 0))
-    address = "235646d62fb74fd390c67795cc94d90f3fb94691f03a9265d573d12684ab98ec"
-    data = "Hello Blockchain!"
+    index = 0
+    timestamp = utcts(datetime.datetime(2017, 4, 7, 16, 3, 0))
+    address = "f4a3ea59c413e6b470ed12757f3758ad70a4e9bff2954263f22be091871cb499"
+    data = "NY-Times on 7.04.2017: U.S. Strikes Syria Over Chemical Attack"
     return Block(index, timestamp, None, data, address)
 
 

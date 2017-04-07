@@ -2,7 +2,11 @@
 import datetime
 import calendar
 import hashlib
-from pynunzen import __blockchain_version__, __block_version__
+
+__blockchain_version__ = "1.0"
+"""Version of the blockchain. Used to versionize the blockchain."""
+__block_version__ = "1.0"
+"""Version of the block. Used to versionize the block."""
 
 
 def utcts(dt):

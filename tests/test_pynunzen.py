@@ -21,6 +21,12 @@ def blockchain():
     return pynunzen.Blockchain()
 
 
+@pytest.fixture
+def block(blockchain):
+    """Fixture for a empty block."""
+    return pynunzen.generate_new_block(blockchain, "Foo")
+
+
 def test_utcts():
     dt = datetime.datetime(2017, 1, 1, 12, 0, 0)
     utcts = pynunzen.utcts(dt)
@@ -55,3 +61,39 @@ def test_generate_new_block(blockchain):
     assert block.index == 1
     assert block.parent == blockchain.end.address
     assert block.data == "Foo"
+
+
+def test_block_validation_ok(blockchain):
+    block = pynunzen.generate_new_block(blockchain, "Foo")
+    result = pynunzen.validate_block(blockchain, block)
+    assert result is True
+
+
+def test_block_validation_fails_index(blockchain, block):
+    block.index = 23
+    with pytest.raises(ValueError):
+        pynunzen.validate_block(blockchain, block)
+
+
+def test_block_validation_fails_parent(blockchain, block):
+    block.parent += "a"
+    with pytest.raises(ValueError):
+        pynunzen.validate_block(blockchain, block)
+
+
+def test_block_validation_fails_address(blockchain, block):
+    block.address += "a"
+    with pytest.raises(ValueError):
+        pynunzen.validate_block(blockchain, block)
+
+
+def test_add_block(blockchain, block):
+    blockchain.append(block)
+    assert blockchain.length == 2
+
+
+def test_add_block_fail(blockchain, block):
+    fail_block = pynunzen.generate_new_block(blockchain, "Foo")
+    blockchain.append(block)
+    with pytest.raises(ValueError):
+        blockchain.append(fail_block)

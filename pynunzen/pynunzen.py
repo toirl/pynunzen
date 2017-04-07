@@ -16,6 +16,29 @@ def utcts(dt):
     return calendar.timegm(dt.utctimetuple())
 
 
+def validate_block(blockchain, block):
+    """Will check if the given block is a valid block to be added to the
+    block chain. Check is always done against the last block in the
+    blockchain."""
+    last_block = blockchain.end
+
+    # Check if the given block links to the last block
+    if last_block.address != block.parent:
+        raise ValueError("Wrong hash for the previous block")
+
+    # Check if the index is +1 to the index of the last block in the
+    # blockchain.
+    if last_block.index - block.index != -1:
+        raise ValueError("Index of block does not match the index of the previos block")
+
+    # Check if the address of the block is correct
+    address = generate_block_address(block.index, block.timestamp, block.parent, block.data)
+    if address != block.address:
+        raise ValueError("Hash of block does not match calculated value.")
+
+    return True
+
+
 def generate_block_address(index, timestamp, parent, data):
     """Will calculate a doubled SHA256 hash which will be used as the
     address of a new created block in the blockchain.
@@ -133,3 +156,16 @@ class Blockchain(object):
 
         """
         return self.blocks[-1]
+
+    @property
+    def length(self):
+        """Will return the number of block which are contained in the blockchain"""
+        return len(self.blocks)
+
+    def append(self, block):
+        """Will append the given block to the blockchain
+
+        :block: :class:`Block` instance
+        """
+        validate_block(self, block)
+        self.blocks.append(block)

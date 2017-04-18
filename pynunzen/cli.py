@@ -3,13 +3,16 @@
 import click
 
 
-@click.command()
+@click.group()
 def main(args=None):
-    """Console script for pynunzen"""
-    click.echo("Replace this message by putting your code into "
-               "pynunzen.cli.main")
-    click.echo("See click documentation at http://click.pocoo.org/")
+    """Console script for pynunzen client."""
+    pass
 
 
-if __name__ == "__main__":
-    main()
+@click.command()
+def serve():
+    """Will start the node server"""
+    pass
+
+
+main.add_command(serve)

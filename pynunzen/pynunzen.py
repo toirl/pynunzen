@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
 import datetime
-import calendar
 import hashlib
+from pynunzen.helpers import utcts
 
 __blockchain_version__ = "1.0"
 """Version of the blockchain. Used to versionize the blockchain."""
 __block_version__ = "1.0"
 """Version of the block. Used to versionize the block."""
-
-
-def utcts(dt):
-    """Will return a UTC timestamp of the given datetime"""
-    if dt.tzinfo is not None:
-        raise ValueError("Datetime must be naiv and must not contain any tzinfo")
-    return calendar.timegm(dt.utctimetuple())
 
 
 def validate_block(blockchain, block):

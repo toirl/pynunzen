@@ -49,3 +49,15 @@ Once you have a copy of the source, you can install it with:
 
 .. _Github repo: https://github.com/toirl/pynunzen
 .. _tarball: https://github.com/toirl/pynunzen/tarball/master
+
+Configuration
+-------------
+
+Settings of Pynunzen are stored in a configuration file. The default
+location of the file is `$HOME/.pynunzen.ini`. 
+
+If the file is not existing it will be generated on the first start of
+the Pynunzen node with the following default values:
+
+.. include:: example_config.ini
+   :literal:

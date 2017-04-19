@@ -32,6 +32,13 @@ project_root = os.path.dirname(cwd)
 sys.path.insert(0, project_root)
 
 import pynunzen
+from pynunzen.config import get_config
+
+# Build new configuration file.
+pynunzen_ini_file = os.path.join(project_root, "docs", "example_config.ini")
+if os.path.exists(pynunzen_ini_file):
+    os.remove(pynunzen_ini_file)
+get_config(pynunzen_ini_file)
 
 # -- General configuration ---------------------------------------------
 

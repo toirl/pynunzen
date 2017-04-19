@@ -40,7 +40,7 @@ setup(
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords='pynunzen',
+    keywords='pynunzen, blockchain, p2p, distributed ledger',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

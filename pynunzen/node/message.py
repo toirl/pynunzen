@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import json
 import datetime
 from pynunzen.helpers import utcts
+
+"""Communication between nodes is done by sending and receiving JSON
+strings. As long as the message is handled by the server the message is
+represented as a :class:Message instance."""
 
 
 class MessageParseException(ValueError):
@@ -25,6 +30,13 @@ def encode_message(msg):
 
 
 def decode_message(json_msg):
+    """Will decode a JSON string and return a :class:Message instance.
+    Depending on the `mtype` attribute the method return eithe a
+    :class:Request or :class:Response instance.
+
+    :msg: JSON string
+    :returns: :class:Message
+    """
     try:
         msg_dict = json.loads(json_msg)
         if msg_dict["mtype"] == "request":
@@ -43,34 +55,29 @@ class JSONSerializable(object):
 
 class Message(JSONSerializable):
 
-    """Docstring for Message. """
-
     def __init__(self, mtype, data):
         self.timestamp = utcts(datetime.datetime.utcnow())
+        """Timestamp with """
         self.mtype = mtype
+        """Type of the message. Can be either be `request` or
+        `response`. This string is used while decoding the a JSON string
+        into a :class:Message."""
         self.data = data
+        """Payload of the message"""
 
 
 class Request(Message):
 
-    """Docstring for Request. """
-
     def __init__(self, command, data=None):
-        """TODO: to be defined1. """
         Message.__init__(self, "request", data)
         self.command = command
+        """Name of the command in the request"""
 
 
 class Response(Message):
 
-    """Docstring for Response. """
-
     def __init__(self, data, success=True):
-        """TODO: to be defined1.
-
-        :data: TODO
-        :success: TODO
-
-        """
         Message.__init__(self, "response", data)
         self.success = success
+        """Flag to indicate that the node which sends the response has
+        an error"""

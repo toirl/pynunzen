@@ -20,6 +20,12 @@ port = ${server:port}
 """
 
 
+def get_node_server_address(config):
+    bind = config["server"]["bind"]
+    port = config["server"]["port"]
+    return "tcp://{}:{}".format(bind, port)
+
+
 def get_config(path=DEFAULT_CONFIG_PATH):
     """Will return a :class:ConfigParser instance with the configuration
     loaded from a configuration file located under the given path. If

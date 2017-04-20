@@ -11,7 +11,7 @@ Tests for `config` module.
 import os
 from tempfile import gettempdir
 
-from pynunzen.config import get_config
+from pynunzen.config import get_config, get_node_server_address
 
 
 def test_get_config_new():
@@ -33,3 +33,12 @@ def test_get_config_existing():
     assert config["peer"]["port"] == '7353'
     # Finally delete the file
     os.remove(tmp_config)
+
+
+def test_get_node_server_address():
+    tmpdir = gettempdir()
+    tmp_config = os.path.join(tmpdir, "pynunzen.ini")
+    # First call will create the file
+    config = get_config(tmp_config)
+    address = get_node_server_address(config)
+    assert address == "tcp://*:7353"

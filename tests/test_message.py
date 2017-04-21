@@ -10,7 +10,7 @@ Tests for `message` module.
 
 
 import pytest
-from pynunzen.node.message import (
+from pynunzen.network.message import (
     MessageParseException,
     Request, Response,
     encode_message, decode_message

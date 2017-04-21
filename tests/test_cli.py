@@ -13,7 +13,6 @@ import pytest
 from contextlib import contextmanager
 from click.testing import CliRunner
 
-from pynunzen import pynunzen
 from pynunzen import cli
 
 

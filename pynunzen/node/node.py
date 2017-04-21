@@ -1,6 +1,6 @@
 import datetime
 from pynunzen.helpers import utcts
-from pynunzen.node.message import (
+from pynunzen.network.message import (
     Response, Request,
     encode_message, decode_message
 )

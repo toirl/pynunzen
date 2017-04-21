@@ -1,7 +1,9 @@
-import json
 import datetime
 from pynunzen.helpers import utcts
-from pynunzen.node.message import Response, encode_message
+from pynunzen.node.message import (
+    Response, Request,
+    encode_message, decode_message
+)
 
 
 def cmd_ping(data):
@@ -25,33 +27,14 @@ def recv(json_msg):
     :returns: TODO
 
     """
-    msg = decode_json_msg(json_msg)
-    command = msg["command"]
-    func = CMD2FUNC.get(command)
-    if func:
-        return func(msg["data"])
-    else:
-        raise MessageParseException("Command {} not known".format(command))
-
-
-def decode_json_msg(json_msg):
-    try:
-        return json.loads(json_msg)
-    except:
-        raise MessageParseException("Message can not be parsed")
-
-
-def encode_json_msg(msg):
-    if not isinstance(msg, dict):
-        raise MessageParseException("Message can not be parsed")
-    try:
-        return json.dumps(msg)
-    except:
-        raise MessageParseException("Message can not be parsed")
-
-
-class MessageParseException(ValueError):
-    pass
+    msg = decode_message(json_msg)
+    if isinstance(msg, Request):
+        command = msg.command
+        func = CMD2FUNC.get(command)
+        if func:
+            return func(msg.data)
+        else:
+            raise RuntimeError("Command {} not known".format(command))
 
 
 class Node(object):

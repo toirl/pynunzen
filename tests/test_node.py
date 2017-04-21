@@ -9,10 +9,8 @@ Tests for `node` module.
 """
 
 import pytest
-import datetime
 from pynunzen.node.node import (
-    Node, recv, MessageParseException,
-    encode_json_msg, decode_json_msg
+    Node, recv
 )
 
 
@@ -36,40 +34,11 @@ def test_node_init_peers(nodeA):
     assert nodeA.peers == []
 
 
-def test_encode_message():
-    msg = {}
-    msg["success"] = True
-    msg["type"] = "response"
-    json_msg = encode_json_msg(msg)
-    assert json_msg.find('"success": true') > -1
-
-
-def test_encode_message_fail():
-    with pytest.raises(MessageParseException):
-        encode_json_msg("Foo")
-
-
-def test_encode_message_fail2():
-    with pytest.raises(MessageParseException):
-        encode_json_msg({"Foo": datetime.datetime.now()})
-
-
-def test_decode_message():
-    msg = decode_json_msg('{"command": "Foo", "data": "Bar"}')
-    assert msg["command"] == "Foo"
-    assert msg["data"] == "Bar"
-
-
-def test_decode_message_fail():
-    with pytest.raises(MessageParseException):
-        decode_json_msg("Foo")
-
-
 def test_recv_unknown_command():
-    with pytest.raises(MessageParseException):
-        recv('{"command": "Foo", "data": "Bar"}')
+    with pytest.raises(RuntimeError):
+        recv('{"command": "Foo", "data": "Bar", "mtype": "request"}')
 
 
 def test_recv_ping_command():
-    response = recv('{"command": "ping", "data": ""}')
+    response = recv('{"command": "ping", "data": "", "mtype": "request"}')
     assert response.find('"success": true') > -1

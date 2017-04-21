@@ -32,6 +32,28 @@ def test_decode_broken_json():
         decode_message('{"key": "isbroken}')
 
 
+def test_decode_message_no_json():
+    with pytest.raises(MessageParseException):
+        decode_message("Foo")
+
+
+def test_decode_message_missing_mtype():
+    with pytest.raises(MessageParseException):
+        decode_message('{"command": "Foo", "data": "Bar"}')
+
+
+def test_decode_message_missing_command():
+    with pytest.raises(MessageParseException):
+        decode_message('{"mtype": "request", "data": "Bar"}')
+
+
+def test_decode_message():
+    msg = decode_message('{"command": "Foo", "data": "Bar", "mtype": "request"}')
+    assert msg.mtype == "request"
+    assert msg.command == "Foo"
+    assert msg.data == "Bar"
+
+
 def test_encode_decode_request(request):
     json_message = encode_message(request)
     msg = decode_message(json_message)

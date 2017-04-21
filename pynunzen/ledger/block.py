@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import hashlib
+from pynunzen.helpers import double_sha256
 
 __block_version__ = "1.0"
 """Version of the block. Used to versionize the block."""
@@ -18,11 +18,7 @@ def generate_block_address(index, timestamp, parent, data):
 
     """
     hash_source = str(index) + str(timestamp) + str(parent) + str(data)
-    h1 = hashlib.sha256()
-    h2 = hashlib.sha256()
-    h1.update(hash_source.encode("utf-8"))
-    h2.update(h1.hexdigest().encode("utf-8"))
-    return h2.hexdigest()
+    return double_sha256(hash_source)
 
 
 class Block(object):

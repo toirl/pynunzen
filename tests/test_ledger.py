@@ -28,6 +28,22 @@ def blockchain():
 
 
 @pytest.fixture
+def blockchain_modified_genesis():
+    """Fixture for a empty blockchain. And a modified genesis Block."""
+    blockchain = Blockchain()
+    genesis_block = blockchain.blocks[0]
+    genesis_block.address = "hashismodified"
+    blockchain.blocks[0] = genesis_block
+    return blockchain
+
+
+@pytest.fixture
+def block_with_modified_genesis(blockchain_modified_genesis):
+    """Fixture for a empty block."""
+    return generate_new_block(blockchain_modified_genesis, ["a", "b", "c"])
+
+
+@pytest.fixture
 def block(blockchain):
     """Fixture for a empty block."""
     return generate_new_block(blockchain, ["a", "b", "c"])
@@ -57,6 +73,12 @@ def test_generate_new_block(blockchain, block):
 def test_block_validation_ok(blockchain, block):
     result = validate_block(blockchain, block)
     assert result is True
+
+
+def test_block_validation_modified_genesis(blockchain_modified_genesis,
+                                           block_with_modified_genesis):
+    with pytest.raises(ValueError):
+        validate_block(blockchain_modified_genesis, block_with_modified_genesis)
 
 
 def test_block_validation_fails_index(blockchain, block):

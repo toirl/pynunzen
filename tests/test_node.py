@@ -9,6 +9,7 @@ Tests for `node` module.
 """
 
 import pytest
+from pynunzen.network.message import Request
 from pynunzen.node.node import (
     Node, recv
 )
@@ -36,9 +37,11 @@ def test_node_init_peers(nodeA):
 
 def test_recv_unknown_command():
     with pytest.raises(RuntimeError):
-        recv('{"command": "Foo", "data": "Bar", "mtype": "request"}')
+        msg = Request("Foo", "Bar")
+        recv(repr(msg))
 
 
 def test_recv_ping_command():
-    response = recv('{"command": "ping", "data": "", "mtype": "request"}')
+    msg = Request("ping", "")
+    response = recv(repr(msg))
     assert response.find('"success": true') > -1

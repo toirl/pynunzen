@@ -11,7 +11,7 @@ Tests for `message` module.
 
 import pytest
 from pynunzen.network.message import (
-    MessageParseException,
+    MessageParseException, MessageIntegrityException,
     Request, Response,
     encode_message, decode_message
 )
@@ -39,19 +39,25 @@ def test_decode_message_no_json():
 
 def test_decode_message_missing_mtype():
     with pytest.raises(MessageParseException):
-        decode_message('{"command": "Foo", "data": "Bar"}')
+        decode_message('{"command": "ping", "data": "Bar", "checksum": "3d2b35e89bb4eb971d66a393cf85990f806987bf43900aab8160de62dc91e6f0"}')
 
 
 def test_decode_message_missing_command():
     with pytest.raises(MessageParseException):
-        decode_message('{"mtype": "request", "data": "Bar"}')
+        decode_message('{"data": "Bar", "mtype": "request", "checksum": "3d2b35e89bb4eb971d66a393cf85990f806987bf43900aab8160de62dc91e6f0"}')
 
 
 def test_decode_message():
-    msg = decode_message('{"command": "Foo", "data": "Bar", "mtype": "request"}')
+    msg = decode_message('{"command": "Foo", "data": "Bar", "mtype": "request", "checksum": "3d2b35e89bb4eb971d66a393cf85990f806987bf43900aab8160de62dc91e6f0"}')
     assert msg.mtype == "request"
     assert msg.command == "Foo"
     assert msg.data == "Bar"
+
+
+def test_decode_message_check_integrity():
+
+    with pytest.raises(MessageIntegrityException):
+        decode_message('{"command": "Foo", "data": "Bar_", "mtype": "request", "checksum": "3d2b35e89bb4eb971d66a393cf85990f806987bf43900aab8160de62dc91e6f0"}')
 
 
 def test_encode_decode_request(request):

@@ -3,14 +3,17 @@
 
 import json
 import datetime
-from pynunzen.helpers import utcts
+from pynunzen.helpers import utcts, double_sha256
 
-"""Communication between nodes is done by sending and receiving JSON
-strings. As long as the message is handled by the server the message is
-represented as a :class:Message instance."""
+"""Messages are a containers for messages set in the Pynunzen network.
+When sending a message it is encdoded into a JSON string.
+"""
 
 
 class MessageParseException(ValueError):
+    pass
+
+class MessageIntegrityException(ValueError):
     pass
 
 
@@ -39,8 +42,13 @@ def decode_message(json_msg):
     """
     try:
         msg_dict = json.loads(json_msg)
+        checksum = msg_dict["checksum"]
+        data = msg_dict["data"]
     except:
         raise MessageParseException("Message can not be parsed")
+
+    if double_sha256(data) != checksum:
+        raise MessageIntegrityException("Data does not match checksum!")
 
     data = msg_dict.get("data")
     mtype = msg_dict.get("mtype")
@@ -63,6 +71,7 @@ class JSONSerializable(object):
 
 
 class Message(JSONSerializable):
+    """A Message is a container for messages sent within the P2P network."""
 
     def __init__(self, mtype, data):
         self.timestamp = utcts(datetime.datetime.utcnow())
@@ -73,6 +82,7 @@ class Message(JSONSerializable):
         into a :class:Message."""
         self.data = data
         """Payload of the message"""
+        self.checksum = double_sha256(data)
 
 
 class Request(Message):

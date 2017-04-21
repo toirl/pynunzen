@@ -1,6 +1,7 @@
 import json
 import datetime
 from pynunzen.helpers import utcts
+from pynunzen.node.message import Response, encode_message
 
 
 def cmd_ping(data):
@@ -10,11 +11,9 @@ def cmd_ping(data):
     :returns: Message
 
     """
-    response = {}
-    response["type"] = "response"
-    response["success"] = True
-    response["data"] = utcts(datetime.datetime.utcnow())
-    return encode_json_msg(response)
+    payload = utcts(datetime.datetime.utcnow())
+    response = Response(payload)
+    return encode_message(response)
 
 
 def recv(json_msg):

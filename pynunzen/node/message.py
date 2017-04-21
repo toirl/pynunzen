@@ -39,13 +39,22 @@ def decode_message(json_msg):
     """
     try:
         msg_dict = json.loads(json_msg)
-        if msg_dict["mtype"] == "request":
-            msg = Request(msg_dict["command"], msg_dict["data"])
-        else:
-            msg = Response(msg_dict["data"])
-        return msg
     except:
         raise MessageParseException("Message can not be parsed")
+
+    data = msg_dict.get("data")
+    mtype = msg_dict.get("mtype")
+    if not mtype:
+        raise MessageParseException("Missing 'mtype' in message")
+
+    if mtype == "request":
+        command = msg_dict.get("command")
+        if not command:
+            raise MessageParseException("Request is missing a command")
+        msg = Request(command, data)
+    else:
+        msg = Response(data)
+    return msg
 
 
 class JSONSerializable(object):

@@ -13,6 +13,7 @@ When sending a message it is encdoded into a JSON string.
 class MessageParseException(ValueError):
     pass
 
+
 class MessageIntegrityException(ValueError):
     pass
 

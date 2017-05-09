@@ -9,6 +9,7 @@ __blockchain_version__ = "1.0"
 
 GENESIS_BLOCK_ADDRESS = "f4a3ea59c413e6b470ed12757f3758ad70a4e9bff2954263f22be091871cb499"
 
+
 def generate_genesis_block():
     """Will return a block instance for the very first block in the blockchain.
 

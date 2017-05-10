@@ -16,11 +16,13 @@ from pynunzen.config import get_config, get_node_server_address
 
 def test_get_config_new():
     tmpdir = gettempdir()
-    tmp_config = os.path.join(tmpdir, "pynunzen.ini")
+    notexisting = "iamnothere"
+    tmp_config = os.path.join(tmpdir, notexisting, "pynunzen.ini")
     config = get_config(tmp_config)
     assert config["peer"]["port"] == '7353'
     # Finally delete the file
     os.remove(tmp_config)
+    os.removedirs(os.path.join(tmpdir, notexisting))
 
 
 def test_get_config_existing():

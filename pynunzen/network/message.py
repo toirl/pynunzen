@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Messages are a containers for messages set in the Pynunzen network.
+When sending a message it is encdoded into a JSON string.
+"""
 
 import json
 import datetime
 from pynunzen.helpers import utcts, double_sha256
-
-"""Messages are a containers for messages set in the Pynunzen network.
-When sending a message it is encdoded into a JSON string.
-"""
 
 
 class MessageParseException(ValueError):

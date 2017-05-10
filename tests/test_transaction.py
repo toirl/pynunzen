@@ -26,6 +26,12 @@ def test_validate_transaction(transaction):
     assert validate_transaction(transaction) is True
 
 
+def test_validate_transaction_fails(transaction):
+    from pynunzen.ledger.transaction import validate_transaction
+    transaction.foo = False
+    assert validate_transaction(transaction) is False
+
+
 def test_check_syntax(transaction):
     from pynunzen.ledger.transaction import _check_syntax
     assert _check_syntax(transaction) is True

@@ -59,7 +59,7 @@ def write_keys(path, keys):
     """
     p_keys = pickle.dumps(keys)
     b_keys = base64.b64encode(p_keys)
-    with open(path, "w+") as walletfile:
+    with open(path, "wb+") as walletfile:
         walletfile.write(b_keys)
 
 
@@ -79,6 +79,7 @@ class Wallet(object):
         creating a new wallet
         """
 
+        self.keyring = []
         if os.path.exists(path):
             self.keyring = read_keys(path)
         else:

@@ -5,6 +5,7 @@ import configparser
 
 DEFAULT_CONFIG_DIR = os.path.expanduser("~/.pynunzen")
 DEFAULT_CONFIG_PATH = os.path.join(DEFAULT_CONFIG_DIR, "pynunzen.ini")
+DEFAULT_WALLET_PATH = os.path.join(DEFAULT_CONFIG_DIR, "wallet.dat")
 
 DEFAULT_CONFIG = """
 [server]

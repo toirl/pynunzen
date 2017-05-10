@@ -41,6 +41,9 @@ def get_config(path=DEFAULT_CONFIG_PATH):
     config = configparser.ConfigParser(allow_no_value=True,
                                        interpolation=configparser.ExtendedInterpolation())
     if not os.path.exists(path):
+        dirname = os.path.dirname(path)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
         with open(path, 'w') as configfile:
             config.read_string(DEFAULT_CONFIG)
             #  FIXME: Issue #1. Comments are lost when writing the

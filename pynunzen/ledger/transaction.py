@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
+
 
 __transaction_version__ = "1.0"
+log = logging.getLogger(__name__)
 
 
 def validate_transaction(transaction):
@@ -50,10 +53,15 @@ def validate_transaction(transaction):
     :returns: True or False
 
     """
-    if not _check_syntax(transaction):
-        return False
-    elif not _check_io(transaction):
-        return False
+    checks = [_check_syntax, _check_io]
+    for check in checks:
+        if check(transaction):
+            continue
+        else:
+            log.error("Validation {} of transactoin failed".format(check.__name__))
+            return False
+    else:
+        log.debug("Validation of transaction successfull")
     return True
 
 

@@ -11,7 +11,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'Click>=6.0',
-    'pybitcointools'
+    'bitcoin',
     # TODO: put package requirements here
 ]
 
@@ -41,7 +41,7 @@ setup(
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords='pynunzen, blockchain, p2p, distributed ledger',
+    keywords='pynunzen, bitcoin, blockchain, p2p, distributed ledger',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

@@ -79,6 +79,7 @@ class Wallet(object):
         creating a new wallet
         """
 
+        self.path = path
         self.keyring = []
         if os.path.exists(path):
             self.keyring = read_keys(path)
@@ -114,8 +115,23 @@ class Wallet(object):
             addresses[address] = key
         return addresses
 
+    def get_new_address(self):
+        """Will generate a new Pynunzen address and a key pair. The key
+        pair will be written into the wallet file.
+
+        :returns: Address
+
+        """
+        key = generate_key(generate_random())
+        address = pubtoaddr(key["public"])
+        self.keyring.append(key)
+        write_keys(self.path, self.keyring)
+        return address
+
 
 if __name__ == "__main__":
     wallet = Wallet(path=DEFAULT_WALLET_PATH, number_keys=5)
     print(wallet.keyring)
     print(wallet.addresses)
+    print(wallet.get_new_address())
+    print(wallet.keyring)

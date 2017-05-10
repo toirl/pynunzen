@@ -17,7 +17,7 @@ import pytest
 def key():
     """Fixture for prefined key generated from the seed 'Insecure
     Seed'"""
-    return {'public': '045195a66640f62fbd4c16c3621019e2a8ed5665c6399cf7d4214f2023d271516de3fccc23ec5caa250e352157d5ff390621b5ad1cc2e967d3b3d8caf504ee662d', 
+    return {'public': '045195a66640f62fbd4c16c3621019e2a8ed5665c6399cf7d4214f2023d271516de3fccc23ec5caa250e352157d5ff390621b5ad1cc2e967d3b3d8caf504ee662d',
             'private': 'd05de875b2572f4092f51112e20a6177d4f3afcfd74c45cc55d6b55319c0f2a5'}
 
 
@@ -82,3 +82,10 @@ def test_wallet_address(wallet, key):
     assert isinstance(nkey, dict)
     assert nkey["public"] == key["public"]
     assert nkey["private"] == key["private"]
+
+
+def test_wallet_newaddress(newwallet):
+    addresses = newwallet.addresses
+    new_address = newwallet.get_new_address()
+    assert len(addresses.keys()) < len(newwallet.addresses.keys())
+    assert new_address in newwallet.addresses.keys()

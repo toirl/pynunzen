@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import logging
+from decimal import Decimal, getcontext
 
 
 __transaction_version__ = "1.0"
 log = logging.getLogger(__name__)
+getcontext().prec = 8
 
 
 def validate_transaction(transaction):
@@ -90,6 +92,38 @@ def _check_io(transaction):
 
     """
     return len(transaction.inputs) > 0 and len(transaction.outputs) > 0
+
+
+class Data(object):
+
+    """Container for the transfered data/value within a transaction."""
+
+    def __init__(self, value):
+        self.value = value
+
+    def check(self, value):
+        """Will return True if the current container includes the given
+        value.
+
+        :value: Value to be checked
+        :returns: True or False
+
+        """
+        raise NotImplementedError()
+
+
+class Coin(Data):
+
+    def __init__(self, value):
+        value = Decimal(value)
+        super(Coin, self).__init__(value)
+
+    def check(self, value):
+        try:
+            value = Decimal(value)
+        except:
+            raise ValueError("'{}' can not be casted to Decimal".format(value))
+        return self.value > 0
 
 
 class Transaction(object):

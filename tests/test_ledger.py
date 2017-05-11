@@ -19,12 +19,19 @@ from pynunzen.ledger.blockchain import (
     generate_new_block
 )
 from pynunzen.ledger.block import generate_block_address, __block_max_size__
+from pynunzen.ledger.transaction import Transaction
 
 
 @pytest.fixture
 def blockchain():
     """Fixture for a empty blockchain."""
     return Blockchain()
+
+
+@pytest.fixture
+def transaction():
+    """Fixture for a empty blockchain."""
+    return Transaction()
 
 
 @pytest.fixture
@@ -38,15 +45,15 @@ def blockchain_modified_genesis():
 
 
 @pytest.fixture
-def block_with_modified_genesis(blockchain_modified_genesis):
+def block_with_modified_genesis(blockchain_modified_genesis, transaction):
     """Fixture for a empty block."""
-    return generate_new_block(blockchain_modified_genesis, ["a", "b", "c"])
+    return generate_new_block(blockchain_modified_genesis, [transaction, transaction, transaction])
 
 
 @pytest.fixture
-def block(blockchain):
+def block(blockchain, transaction):
     """Fixture for a empty block."""
-    return generate_new_block(blockchain, ["a", "b", "c"])
+    return generate_new_block(blockchain, [transaction, transaction, transaction])
 
 
 def test_generate_block_address():
@@ -64,10 +71,10 @@ def test_generate_genesis_block():
     assert block.index == 0
 
 
-def test_generate_new_block(blockchain, block):
+def test_generate_new_block(blockchain, block, transaction):
     assert block.index == 1
     assert block.parent == blockchain.end.address
-    assert block.data == ["a", "b", "c"]
+    assert block.data == [transaction, transaction, transaction]
 
 
 def test_block_validation_ok(blockchain, block):
@@ -104,18 +111,28 @@ def test_add_block(blockchain, block):
     assert blockchain.length == 2
 
 
-def test_add_block_fail(blockchain, block):
-    fail_block = generate_new_block(blockchain, ["Foo"])
+def test_add_block_fail(blockchain, block, transaction):
+    fail_block = generate_new_block(blockchain, [transaction])
     blockchain.append(block)
     with pytest.raises(ValueError):
         blockchain.append(fail_block)
 
 
-def test_wrong_block_data(blockchain):
+def test_wrong_block_data_container(blockchain):
     with pytest.raises(ValueError):
         generate_new_block(blockchain, "Foo")
+
+
+def test_wrong_block_data_type(blockchain):
+    with pytest.raises(ValueError):
+        generate_new_block(blockchain, ["Foo"])
 
 
 def test_max_size_block_data(blockchain):
     with pytest.raises(ValueError):
         generate_new_block(blockchain, [x for x in range(__block_max_size__ + 1)])
+
+
+def test_min_size_block_data(blockchain):
+    with pytest.raises(ValueError):
+        generate_new_block(blockchain, [])

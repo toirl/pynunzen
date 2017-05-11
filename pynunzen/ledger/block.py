@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from pynunzen.helpers import double_sha256
+from pynunzen.ledger.transaction import Transaction
 
 __block_version__ = "1.0"
 """Version of the block. Used to versionize the block."""
@@ -47,6 +48,12 @@ class Block(object):
             raise ValueError("Data must be a list")
         if len(data) > __block_max_size__:
             raise ValueError("Data must must not be longer than {}".format(__block_max_size__))
+        if len(data) == 0:
+            raise ValueError("Data must must not empty")
+        for transaction in data:
+            if not isinstance(transaction, Transaction):
+                raise ValueError("Data must contain only transactions. Found {}".format(transaction))
+
         self.data = data
         """Holds the data oft the block. Data must be a list."""
 

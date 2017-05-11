@@ -18,7 +18,7 @@ from pynunzen.ledger.blockchain import (
     generate_genesis_block,
     generate_new_block
 )
-from pynunzen.ledger.block import generate_block_address
+from pynunzen.ledger.block import generate_block_address, __block_max_size__
 
 
 @pytest.fixture
@@ -114,3 +114,8 @@ def test_add_block_fail(blockchain, block):
 def test_wrong_block_data(blockchain):
     with pytest.raises(ValueError):
         generate_new_block(blockchain, "Foo")
+
+
+def test_max_size_block_data(blockchain):
+    with pytest.raises(ValueError):
+        generate_new_block(blockchain, [x for x in range(__block_max_size__ + 1)])

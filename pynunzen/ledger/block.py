@@ -4,6 +4,9 @@ from pynunzen.helpers import double_sha256
 
 __block_version__ = "1.0"
 """Version of the block. Used to versionize the block."""
+__block_max_size__ = 256
+"""Max length of the `data` attribute within a block. This is not a
+limitation in bytes but in general length."""
 
 
 def generate_block_address(index, timestamp, parent, data):
@@ -42,6 +45,8 @@ class Block(object):
         #
         if not isinstance(data, list):
             raise ValueError("Data must be a list")
+        if len(data) > __block_max_size__:
+            raise ValueError("Data must must not be longer than {}".format(__block_max_size__))
         self.data = data
         """Holds the data oft the block. Data must be a list."""
 

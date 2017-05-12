@@ -57,7 +57,7 @@ def bob_wallet():
     from pynunzen.node.wallet import Wallet
     testdir = os.path.dirname(os.path.realpath(__file__))
     wallet_path = os.path.join(testdir, "bobwallet.data")
-    return Wallet(wallet_path)
+    return Wallet(wallet_path, 10)
 
 @pytest.fixture
 def alice_wallet():
@@ -66,7 +66,7 @@ def alice_wallet():
     from pynunzen.node.wallet import Wallet
     testdir = os.path.dirname(os.path.realpath(__file__))
     wallet_path = os.path.join(testdir, "alicewallet.data")
-    return Wallet(wallet_path)
+    return Wallet(wallet_path, 10)
 
 
 def test_generate_random():

@@ -50,6 +50,24 @@ def wallet(walletfile):
     tmp_wallet = os.path.join(tmpdir, "testwallet.data")
     return Wallet(tmp_wallet)
 
+@pytest.fixture
+def bob_wallet():
+    """Fixture for prefined key generated from the seed 'Insecure
+    Seed'"""
+    from pynunzen.node.wallet import Wallet
+    testdir = os.path.dirname(os.path.realpath(__file__))
+    wallet_path = os.path.join(testdir, "bobwallet.data")
+    return Wallet(wallet_path)
+
+@pytest.fixture
+def alice_wallet():
+    """Fixture for prefined key generated from the seed 'Insecure
+    Seed'"""
+    from pynunzen.node.wallet import Wallet
+    testdir = os.path.dirname(os.path.realpath(__file__))
+    wallet_path = os.path.join(testdir, "alicewallet.data")
+    return Wallet(wallet_path)
+
 
 def test_generate_random():
     from pynunzen.node.wallet import NBYTES_SECRET, generate_random

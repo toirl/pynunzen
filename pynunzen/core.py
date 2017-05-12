@@ -52,11 +52,12 @@ class Core(object):
         for block in self.blockchain.blocks:
             for transaction in block.data:
                 for output in transaction.outputs:
-                    for address in output:
-                        if isinstance(output[address], Data):
-                            self.global_utxo[address] = output[address]
-                            if address in self.wallet.addresses:
-                                self.utxo[address] = output[address]
+                    address = output[0]
+                    data = output[1]
+                    if isinstance(data, Data):
+                        self.global_utxo[address] = data
+                        if address in self.wallet.addresses:
+                            self.utxo[address] = data
                     else:
                         continue
 
@@ -74,15 +75,24 @@ class Core(object):
             if data.value > self.balance:
                 raise ValueError("Not enough coins! You only have {} coins!".format(self.balance))
             else:
+                # Although UTXO can be any arbitrary value, once created
+                # it is indivisible just like a coin that cannot be cut
+                # in half. If a UTXO is larger than the desired value of
+                # a transaction, it must still be consumed in its
+                # entirety and change must be generated in the
+                # transaction. In other words, if you have a 20 bitcoin
+                # UTXO and want to pay 1 bitcoin, your transaction must
+                # consume the entire 20 bitcoin UTXO and produce two
+                # outputs: one paying 1 bitcoin to your desired
+                # recipient and another paying 19 bitcoin in change back
+                # to your wallet. As a result, most bitcoin transactions
+                # will generate change
                 inputs = []
                 total = 0
-                # Collect enough inputs to settle the wanted amount of
-                # coins.
                 for address in self.utxo:
                     total += self.utxo[address].value
-                    inputs.append({address, self.utxo[address]})
-                    if total >= data.value:
-                        break
+                    inputs.append((address, self.utxo[address]))
+                    change_address = address
 
                 # Calculate difference between total and data.value to
                 # create a new output for the change we will receive.
@@ -90,8 +100,9 @@ class Core(object):
 
                 # Now create the outputs
                 outputs = []
-                outputs.append({"newaddress": Coin(change)})
-                outputs.append({address: data})
+                if change:
+                    outputs.append((change_address, Coin(change)))
+                outputs.append((address, data))
 
                 transaction = Transaction()
                 transaction.outputs = outputs

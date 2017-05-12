@@ -41,6 +41,7 @@ def test_balance_coreA(coreA):
 def test_balance_coreB(coreB):
     assert coreB.balance == 6000
 
+
 def test_send_fail_insufficient_output(coreA, coreB):
     from pynunzen.ledger.transaction import Coin
     # Get a address from coreA

@@ -30,7 +30,7 @@ def blockchain(alice_wallet, bob_wallet):
     b1_transactions = []
     for address in list(alice_wallet.addresses)[0:4]:
         tx = Transaction()
-        tx.outputs.append({address: 1000})
+        tx.outputs.append({address: Coin(1000)})
         b1_transactions.append(tx)
     b1 = generate_new_block(blockchain, b1_transactions)
     blockchain.append(b1)
@@ -38,7 +38,7 @@ def blockchain(alice_wallet, bob_wallet):
     b2_transactions = []
     for address in list(bob_wallet.addresses)[0:4]:
         tx = Transaction()
-        tx.outputs.append({address: 1500})
+        tx.outputs.append({address: Coin(1500)})
         b2_transactions.append(tx)
     b2 = generate_new_block(blockchain, b2_transactions)
     blockchain.append(b2)

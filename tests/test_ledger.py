@@ -19,13 +19,30 @@ from pynunzen.ledger.blockchain import (
     generate_new_block
 )
 from pynunzen.ledger.block import generate_block_address, __block_max_size__
-from pynunzen.ledger.transaction import Transaction
+from pynunzen.ledger.transaction import Transaction, Coin
+from .test_wallet import alice_wallet, bob_wallet
 
 
 @pytest.fixture
-def blockchain():
-    """Fixture for a empty blockchain."""
-    return Blockchain()
+def blockchain(alice_wallet, bob_wallet):
+    blockchain = Blockchain()
+    # 1. Generate 4 initial output in the first block for alice and bob
+    b1_transactions = []
+    for address in list(alice_wallet.addresses)[0:4]:
+        tx = Transaction()
+        tx.outputs.append({address: 1000})
+        b1_transactions.append(tx)
+    b1 = generate_new_block(blockchain, b1_transactions)
+    blockchain.append(b1)
+
+    b2_transactions = []
+    for address in list(bob_wallet.addresses)[0:4]:
+        tx = Transaction()
+        tx.outputs.append({address: 1500})
+        b2_transactions.append(tx)
+    b2 = generate_new_block(blockchain, b2_transactions)
+    blockchain.append(b2)
+    return blockchain
 
 
 @pytest.fixture
@@ -72,7 +89,7 @@ def test_generate_genesis_block():
 
 
 def test_generate_new_block(blockchain, block, transaction):
-    assert block.index == 1
+    assert block.index == 3
     assert block.parent == blockchain.end.address
     assert block.data == [transaction, transaction, transaction]
 
@@ -108,7 +125,7 @@ def test_block_validation_fails_address(blockchain, block):
 
 def test_add_block(blockchain, block):
     blockchain.append(block)
-    assert blockchain.length == 2
+    assert blockchain.length == 4
 
 
 def test_add_block_fail(blockchain, block, transaction):

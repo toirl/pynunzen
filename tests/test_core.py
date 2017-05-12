@@ -51,7 +51,8 @@ def test_send_fail_insufficient_output(coreA, coreB):
     with pytest.raises(ValueError):
         coreA.get_transaction(Coin(4001), coreB_address)
 
-def test_send(coreA, coreB):
+
+def test_get_transaction(coreA, coreB):
     from pynunzen.ledger.transaction import Coin
     # Get a address from coreA
     coreB_address = list(coreB.wallet.addresses.keys())[0]
@@ -61,13 +62,14 @@ def test_send(coreA, coreB):
 
     # To settlte the requested amount of coins we need at least 2
     # inputs
-    assert len(tx.inputs) == 2
+    assert len(tx.inputs) == 4
 
     # The output should be two outputs.
     assert len(tx.outputs) == 2
     change = tx.outputs[0]
     spent = tx.outputs[1]
+    assert spent[1].value == 1001
+    assert change[1].value == 2999
 
-
-
-    #coreB.recv.set_transaction(tx)
+    # Ensure that the change is readded to an address in out own wallet.
+    assert change[0] in list(coreA.wallet.addresses.keys())

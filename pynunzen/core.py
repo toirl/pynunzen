@@ -58,8 +58,6 @@ class Core(object):
                         self.global_utxo[address] = data
                         if address in self.wallet.addresses:
                             self.utxo[address] = data
-                    else:
-                        continue
 
     def get_transaction(self, data, address):
         """Will return a new :class:Transaction instance which will

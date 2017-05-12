@@ -52,6 +52,15 @@ def test_send_fail_insufficient_output(coreA, coreB):
         coreA.get_transaction(Coin(4001), coreB_address)
 
 
+def test_send_fail_wrong_data(coreA, coreB):
+    from pynunzen.ledger.transaction import Coin
+    # Get a address from coreA
+    coreB_address = list(coreB.wallet.addresses.keys())[0]
+
+    with pytest.raises(ValueError):
+        coreA.get_transaction("Wrongdata", coreB_address)
+
+
 def test_get_transaction(coreA, coreB):
     from pynunzen.ledger.transaction import Coin
     # Get a address from coreA

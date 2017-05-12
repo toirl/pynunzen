@@ -52,9 +52,8 @@ def transaction():
 
 
 @pytest.fixture
-def blockchain_modified_genesis():
+def blockchain_modified_genesis(blockchain):
     """Fixture for a empty blockchain. And a modified genesis Block."""
-    blockchain = Blockchain()
     genesis_block = blockchain.blocks[0]
     genesis_block.address = "hashismodified"
     blockchain.blocks[0] = genesis_block

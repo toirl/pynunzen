@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from pynunzen.ledger.transaction import Data, Coin
+from pynunzen.ledger.transaction import Transaction, Data, Coin
 
 
 class Core(object):
@@ -69,8 +69,34 @@ class Core(object):
         :returns: :class:Transaction
 
         """
-        # Check if the blockchain contains the data in one or more
-        # addresses of the wallet
-        for address in self.wallet.addresses:
-            pass
+        if isinstance(data, Coin):
+            # Check if we have enough coins
+            if data.value > self.balance:
+                raise ValueError("Not enough coins! You only have {} coins!".format(self.balance))
+            else:
+                inputs = []
+                total = 0
+                # Collect enough inputs to settle the wanted amount of
+                # coins.
+                for address in self.utxo:
+                    total += self.utxo[address].value
+                    inputs.append({address, self.utxo[address]})
+                    if total >= data.value:
+                        break
+
+                # Calculate difference between total and data.value to
+                # create a new output for the change we will receive.
+                change = total - data.value
+
+                # Now create the outputs
+                outputs = []
+                outputs.append({"newaddress": Coin(change)})
+                outputs.append({address: data})
+
+                transaction = Transaction()
+                transaction.outputs = outputs
+                transaction.inputs = inputs
+
+                return transaction
+
         raise ValueError("Can not build a transaction for data {} to {}".format(data, address))

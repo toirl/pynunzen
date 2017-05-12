@@ -41,12 +41,32 @@ def test_balance_coreA(coreA):
 def test_balance_coreB(coreB):
     assert coreB.balance == 6000
 
-@pytest.mark.xfail
+def test_send_fail_insufficient_output(coreA, coreB):
+    from pynunzen.ledger.transaction import Coin
+    # Get a address from coreA
+    coreB_address = list(coreB.wallet.addresses.keys())[0]
+
+    # Set 1000 from coreA to coreB
+    with pytest.raises(ValueError):
+        coreA.get_transaction(Coin(4001), coreB_address)
+
 def test_send(coreA, coreB):
     from pynunzen.ledger.transaction import Coin
     # Get a address from coreA
     coreB_address = list(coreB.wallet.addresses.keys())[0]
 
     # Set 1000 from coreA to coreB
-    tx = coreA.get_transaction(Coin(1000), coreB_address)
+    tx = coreA.get_transaction(Coin(1001), coreB_address)
+
+    # To settlte the requested amount of coins we need at least 2
+    # inputs
+    assert len(tx.inputs) == 2
+
+    # The output should be two outputs.
+    assert len(tx.outputs) == 2
+    change = tx.outputs[0]
+    spent = tx.outputs[1]
+
+
+
     #coreB.recv.set_transaction(tx)

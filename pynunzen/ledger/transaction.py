@@ -126,6 +126,38 @@ class Coin(Data):
         return self.value > 0
 
 
+class LockScript(object):
+
+    """A locking script is an encumbrance placed on an output, and it
+    specifies the conditions that must be met to spend the output in the
+    future"""
+
+    def __init__(self, script):
+        self._script = script
+
+    def unlock(self, script):
+        return self._script == script
+
+
+class Output(object):
+
+    """Output for a transaction. Transaction outputs consist of two
+    parts: An amount of data which is about to be transferred, and a
+    locking script, also known as an "encumbrance" that "locks" this
+    data by specifying the conditions that must be met to spend the
+    output"""
+
+    def __init__(self, data, script):
+        """
+
+        :data: :class:Data instance.
+        :script: :class:LockScript instance.
+
+        """
+        self.data = data
+        self.script = script
+
+
 class Transaction(object):
 
     """A transaction is a data structure that encodes a transfer of

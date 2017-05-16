@@ -52,12 +52,12 @@ class Core(object):
         for block in self.blockchain.blocks:
             for transaction in block.data:
                 for output in transaction.outputs:
-                    address = output[0]
-                    data = output[1]
-                    if isinstance(data, Data):
-                        self.global_utxo[address] = data
-                        if address in self.wallet.addresses:
-                            self.utxo[address] = data
+                    if isinstance(output.data, Data):
+                        #  TODO: Unclear how already spent outputs are
+                        #  identified. (ti) <2017-05-16 22:02>
+                        for address in self.wallet.addresses:
+                            if output.script.unlock(address):
+                                self.utxo[address] = output.data
 
     def get_transaction(self, data, address):
         """Will return a new :class:Transaction instance which will

@@ -19,7 +19,7 @@ from pynunzen.ledger.blockchain import (
     generate_new_block
 )
 from pynunzen.ledger.block import generate_block_address, __block_max_size__
-from pynunzen.ledger.transaction import Transaction, Coin
+from pynunzen.ledger.transaction import Transaction, Coin, Output, LockScript
 from .test_wallet import alice_wallet, bob_wallet
 
 
@@ -29,14 +29,16 @@ def blockchain(alice_wallet, bob_wallet):
     # 1. Generate 4 initial output in the first block for alice and bob
     b1_transactions = []
     for address in list(alice_wallet.addresses)[0:4]:
-        tx = Transaction([], [(address, Coin(1000))])
+        tx_output = Output(Coin(1000), LockScript(address))
+        tx = Transaction([], [tx_output])
         b1_transactions.append(tx)
     b1 = generate_new_block(blockchain, b1_transactions)
     blockchain.append(b1)
 
     b2_transactions = []
     for address in list(bob_wallet.addresses)[0:4]:
-        tx = Transaction([], [(address, Coin(1500))])
+        tx_output = Output(Coin(1500), LockScript(address))
+        tx = Transaction([], [tx_output])
         b2_transactions.append(tx)
     b2 = generate_new_block(blockchain, b2_transactions)
     blockchain.append(b2)

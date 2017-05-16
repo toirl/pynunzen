@@ -19,8 +19,7 @@ def generate_genesis_block():
     index = 0
     timestamp = utcts(datetime.datetime(2017, 4, 7, 16, 3, 0))
     address = GENESIS_BLOCK_ADDRESS
-    transaction = Transaction()
-    transaction.inputs.append("NY-Times on 7.04.2017: U.S. Strikes Syria Over Chemical Attack")
+    transaction = Transaction(["NY-Times on 7.04.2017: U.S. Strikes Syria Over Chemical Attack"], [])
     data = [transaction]
     return Block(index, timestamp, None, data, address)
 

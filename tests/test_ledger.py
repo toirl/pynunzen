@@ -29,16 +29,14 @@ def blockchain(alice_wallet, bob_wallet):
     # 1. Generate 4 initial output in the first block for alice and bob
     b1_transactions = []
     for address in list(alice_wallet.addresses)[0:4]:
-        tx = Transaction()
-        tx.outputs.append((address, Coin(1000)))
+        tx = Transaction([], [(address, Coin(1000))])
         b1_transactions.append(tx)
     b1 = generate_new_block(blockchain, b1_transactions)
     blockchain.append(b1)
 
     b2_transactions = []
     for address in list(bob_wallet.addresses)[0:4]:
-        tx = Transaction()
-        tx.outputs.append((address, Coin(1500)))
+        tx = Transaction([], [(address, Coin(1500))])
         b2_transactions.append(tx)
     b2 = generate_new_block(blockchain, b2_transactions)
     blockchain.append(b2)
@@ -48,7 +46,7 @@ def blockchain(alice_wallet, bob_wallet):
 @pytest.fixture
 def transaction():
     """Fixture for a empty blockchain."""
-    return Transaction()
+    return Transaction([], [])
 
 
 @pytest.fixture

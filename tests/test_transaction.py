@@ -15,9 +15,7 @@ import pytest
 def transaction():
     """Fixture for a empty Transaction."""
     from pynunzen.ledger.transaction import Transaction
-    transaction = Transaction()
-    transaction.inputs.append(1)
-    transaction.outputs.append(2)
+    transaction = Transaction([1], [2])
     return transaction
 
 

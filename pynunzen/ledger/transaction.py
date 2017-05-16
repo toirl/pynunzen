@@ -132,11 +132,11 @@ class Transaction(object):
     value from a source of data/value, called an input, to a destination,
     called an output."""
 
-    def __init__(self):
+    def __init__(self, inputs, outputs):
         """TODO: to be defined1. """
         self.version = __transaction_version__
         """Version of this transaction"""
-        self.inputs = []
+        self.inputs = inputs
         """One or more transaction inputs"""
-        self.outputs = []
+        self.outputs = outputs
         """One or more transaction outputs"""

@@ -102,10 +102,7 @@ class Core(object):
                     outputs.append((change_address, Coin(change)))
                 outputs.append((address, data))
 
-                transaction = Transaction()
-                transaction.outputs = outputs
-                transaction.inputs = inputs
-
+                transaction = Transaction(inputs, outputs)
                 return transaction
 
         raise ValueError("Can not build a transaction for data {} to {}".format(data, address))

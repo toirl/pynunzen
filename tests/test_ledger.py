@@ -16,7 +16,9 @@ from pynunzen.ledger.blockchain import (
     Blockchain,
     validate_block,
     generate_genesis_block,
-    generate_new_block
+    generate_new_block,
+    GENESIS_BLOCK_INPUT,
+    GENESIS_BLOCK_ADDRESS
 )
 from pynunzen.ledger.block import generate_block_address, __block_max_size__
 from pynunzen.ledger.transaction import Transaction, Coin, Output, LockScript
@@ -85,6 +87,8 @@ def test_generate_block_address():
 def test_generate_genesis_block():
     block = generate_genesis_block()
     assert block.index == 0
+    assert block.address == GENESIS_BLOCK_ADDRESS
+    assert block.data[0].inputs[0].data.value == GENESIS_BLOCK_INPUT
 
 
 def test_generate_new_block(blockchain, block, transaction):

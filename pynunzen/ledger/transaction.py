@@ -139,6 +139,18 @@ class LockScript(object):
         return self._script == script
 
 
+class UnlockScript(object):
+
+    """An unlocking script is a script that "solves," or satisfies, the
+    conditions placed on an output by a locking script and allows the
+    output to be spent. Unlocking scripts are part of every transaction
+    input, and most of the time they contain a digital signature
+    produced by the user’s wallet from his or her private key"""
+
+    def __init__(self, script):
+        self._script = script
+
+
 class Output(object):
 
     """Output for a transaction. Transaction outputs consist of two
@@ -156,6 +168,33 @@ class Output(object):
         """
         self.data = data
         self.script = script
+
+
+class Input(object):
+
+    """In simple terms, transaction inputs are pointers to UTXO. They
+    point to a specific UTXO by reference to the transaction hash and
+    sequence number where the UTXO is recorded in the blockchain. To
+    spend UTXO, a transaction input also includes unlocking scripts that
+    satisfy the spending conditions set by the UTXO. The unlocking
+    script is usually a signature proving ownership of the bitcoin
+    address that is in the locking script."""
+
+    def __init__(self, data, script, tx_hash, utxo_idx):
+        """
+
+        :data: :class:Data instance.
+        :script: :class:UnlockScript instance.
+        :txhash: Reference to the hash of the transaction with unspent
+        outputs.
+        :utxo_idx: Index to the unspent output in the referenced
+        transaction (txhash). 0 is the first.
+
+        """
+        self.data = data
+        self.script = script
+        self.tx_hash = tx_hash
+        self.utxo_idx = utxo_idx
 
 
 class Transaction(object):

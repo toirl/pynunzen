@@ -130,7 +130,8 @@ class LockScript(object):
 
     """A locking script is an encumbrance placed on an output, and it
     specifies the conditions that must be met to spend the output in the
-    future"""
+    future. Most of the time this is the public address of the receiver
+    of the transaction."""
 
     def __init__(self, script):
         self._script = script

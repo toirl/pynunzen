@@ -3,6 +3,7 @@
 import os
 import pickle
 import base64
+import collections
 from bitcoin import sha256, privtopub, pubtoaddr
 
 from pynunzen.config import DEFAULT_WALLET_PATH
@@ -109,7 +110,7 @@ class Wallet(object):
 
         :returns: Dictionary with address mapping
         """
-        addresses = {}
+        addresses = collections.OrderedDict()
         for key in self.keyring:
             address = pubtoaddr(key["public"])
             addresses[address] = key

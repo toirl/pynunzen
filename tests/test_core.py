@@ -77,8 +77,8 @@ def test_get_transaction(coreA, coreB):
     assert len(tx.outputs) == 2
     change = tx.outputs[0]
     spent = tx.outputs[1]
-    assert spent[1].value == 1001
-    assert change[1].value == 2999
+    assert spent.data.value == 1001
+    assert change.data.value == 2999
 
     # Ensure that the change is readded to an address in out own wallet.
-    assert change[0] in list(coreA.wallet.addresses.keys())
+    assert change.script._script in list(coreA.wallet.addresses.keys())

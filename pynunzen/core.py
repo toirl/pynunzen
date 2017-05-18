@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from pynunzen.ledger.transaction import Transaction, Data, Coin
+from pynunzen.ledger.transaction import (
+    Transaction, Data, Coin,
+    Input, Output, UnlockScript, LockScript
+)
 
 
 class Core(object):
@@ -89,7 +92,10 @@ class Core(object):
                 total = 0
                 for address in self.utxo:
                     total += self.utxo[address].value
-                    inputs.append((address, self.utxo[address]))
+                    #  TODO: Build correct transactions. Refer to a
+                    #  previous transaction, put correct Unlockscript.
+                    #  (ti) <2017-05-18 20:33>
+                    inputs.append(Input(self.utxo[address], UnlockScript(address), "1234" * 8, 1))
                     change_address = address
 
                 # Calculate difference between total and data.value to
@@ -99,8 +105,8 @@ class Core(object):
                 # Now create the outputs
                 outputs = []
                 if change:
-                    outputs.append((change_address, Coin(change)))
-                outputs.append((address, data))
+                    outputs.append(Output(Coin(change), LockScript(change_address)))
+                outputs.append(Output(data, LockScript(address)))
 
                 transaction = Transaction(inputs, outputs)
                 return transaction

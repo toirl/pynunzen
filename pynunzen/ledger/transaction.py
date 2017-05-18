@@ -198,6 +198,21 @@ class Input(object):
         self.utxo_idx = utxo_idx
 
 
+class CoinbaseInput(Input):
+
+    """The coinbase input is a special input. It is the input of the
+    first transaction within a new block. It is the origin of the reward
+    for the miner who generated the new block. As this input has no
+    reference to a origin output it has some special logic to unlock
+    the input."""
+
+    def __init__(self, data, script, coinbase_script):
+        tx_hash = "0" * 32
+        utxo_idx = 0
+        Input.__init__(self, data, script, tx_hash, utxo_idx)
+        self.coinbase_script = coinbase_script
+
+
 class Transaction(object):
 
     """A transaction is a data structure that encodes a transfer of

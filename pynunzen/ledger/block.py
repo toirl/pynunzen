@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from pynunzen.helpers import double_sha256
-from pynunzen.ledger.transaction import Transaction
+from pynunzen.ledger.transaction import Transaction, CoinbaseInput
 
 __block_version__ = "1.0"
 """Version of the block. Used to versionize the block."""
@@ -53,6 +53,12 @@ class Block(object):
         for transaction in data:
             if not isinstance(transaction, Transaction):
                 raise ValueError("Data must contain only transactions. Found {}".format(transaction))
+        # Check that the first transaction in this block is a coinbase
+        # transaction.
+        if len(data[0].inputs) != 1 or len(data[0].outputs) != 1:
+                raise ValueError("First transaction must have exactly one input and output")
+        if not isinstance(data[0].inputs[0], CoinbaseInput):
+                raise ValueError("First transaction in block seems not to be a coinbase transaction")
 
         self.data = data
         """Holds the data oft the block. Data must be a list."""

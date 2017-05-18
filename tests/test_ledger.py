@@ -24,38 +24,25 @@ from pynunzen.ledger.block import generate_block_address, __block_max_size__
 from pynunzen.ledger.transaction import Transaction, Coin, Output, LockScript, Input, UnlockScript, Data, CoinbaseInput
 from .test_wallet import alice_wallet, bob_wallet
 
-
 @pytest.fixture
 def blockchain(alice_wallet, bob_wallet):
     blockchain = Blockchain()
 
-    # 1. Generate a coinbasetransaction for for the first block
-    cb_tx_in = CoinbaseInput(Data("xxx"), UnlockScript(None), LockScript(None))
-    cb_tx_out = Output(Coin(1000), LockScript(list(alice_wallet.addresses)[0]))
-    cb_tx = Transaction([cb_tx_in], [cb_tx_out])
+    # 1. Generate a coinbasetransaction for for the first block. Add
+    # 1000 coins for alice.
+    for x in range(4):
+        cb_tx_in = CoinbaseInput(Data("xxx"), UnlockScript(None), UnlockScript(None))
+        cb_tx_out = Output(Coin(1000), LockScript(list(alice_wallet.addresses)[0]))
+        alice_cb_tx = Transaction([cb_tx_in], [cb_tx_out])
+        blockchain.append(generate_new_block(blockchain, [alice_cb_tx]))
 
-    # 2. Generate 3 initial output in the first block for alice
-    b1_transactions = [cb_tx]
-    for address in list(alice_wallet.addresses)[1:4]:
-        tx_output = Output(Coin(1000), LockScript(address))
-        tx = Transaction([], [tx_output])
-        b1_transactions.append(tx)
-    b1 = generate_new_block(blockchain, b1_transactions)
-    blockchain.append(b1)
-
-    # 3. Generate a coinbasetransaction for for the first block
-    cb_tx_in = CoinbaseInput(Data("xxx"), UnlockScript(None), LockScript(None))
-    cb_tx_out = Output(Coin(1500), LockScript(list(bob_wallet.addresses)[0]))
-    cb_tx = Transaction([cb_tx_in], [cb_tx_out])
-
-    # 4. Generate 3 initial output in the first block for alice
-    b2_transactions = [cb_tx]
-    for address in list(bob_wallet.addresses)[1:4]:
-        tx_output = Output(Coin(1500), LockScript(address))
-        tx = Transaction([], [tx_output])
-        b2_transactions.append(tx)
-    b2 = generate_new_block(blockchain, b2_transactions)
-    blockchain.append(b2)
+    # 2. Generate a coinbasetransaction for for the seconds block. Add
+    # 1000 coins for bob.
+    for x in range(6):
+        cb_tx_in = CoinbaseInput(Data("xxx"), UnlockScript(None), UnlockScript(None))
+        cb_tx_out = Output(Coin(1000), LockScript(list(bob_wallet.addresses)[0]))
+        bob_cb_tx = Transaction([cb_tx_in], [cb_tx_out])
+        blockchain.append(generate_new_block(blockchain, [bob_cb_tx]))
     return blockchain
 
 
@@ -113,7 +100,7 @@ def test_generate_genesis_block():
 
 
 def test_generate_new_block(blockchain, block, coinbasetransaction, transaction):
-    assert block.index == 3
+    assert block.index == 11
     assert block.parent == blockchain.end.address
     assert block.data == [coinbasetransaction, transaction, transaction]
 
@@ -166,7 +153,7 @@ def test_block_validation_fails_address(blockchain, block):
 
 def test_add_block(blockchain, block):
     blockchain.append(block)
-    assert blockchain.length == 4
+    assert blockchain.length == 12
 
 
 def test_add_block_fail(blockchain, block, coinbasetransaction, transaction):

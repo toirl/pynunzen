@@ -194,3 +194,15 @@ def test_max_size_block_data(blockchain):
 def test_min_size_block_data(blockchain):
     with pytest.raises(ValueError):
         generate_new_block(blockchain, [])
+
+
+def test_get_transaction(blockchain):
+    tx_hash = blockchain.blocks[4].data[0].hash
+    tx = blockchain.get_transaction(tx_hash)
+    assert tx.outputs[0].script._script == "15PFxDy7xiw4dQxCnar1pdJUbN7MB1Wigr"
+    assert tx.outputs[0].data.value == 1000
+
+
+def test_get_transaction_fail(blockchain):
+    tx = blockchain.get_transaction("xxx")
+    assert tx is None

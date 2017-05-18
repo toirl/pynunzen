@@ -102,3 +102,16 @@ class Blockchain(object):
         """
         validate_block(self, block)
         self.blocks.append(block)
+
+    def get_transaction(self, tx_hash):
+        """Will return the transaction from the blockchain. If no transaction can be found with the given hash None ist returned.
+
+        :returns: :class:Transaction instance
+
+        """
+        for block in self.blocks:
+            #  TODO: Use Merkletree to find the transaction. (ti) <2017-05-18 22:29>
+            for transaction in block.data:
+                if transaction.hash == tx_hash:
+                    return transaction
+        return None

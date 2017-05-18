@@ -27,9 +27,13 @@ class Core(object):
         self.wallet = wallet
         """The wallet holds the private and public key and addresses."""
         self.global_utxo = {}
-        """Dictionary with a list of *all* Unspent Transaction Outputs (UTXO)
-        in the blockchain. An UTXO can be spent as an input in a new
-        transaction."""
+        """A Dictionary with a list of *all* Unspent Transaction Outputs
+        (UTXO) in the blockchain. An UTXO can be spent as an input in a
+        new transaction. A UTXO is referenced by the hash value of the
+        :class:Transaction and the index of the output within the
+        referenced transaction. The key of the dictionary is a string
+        contatinated by the hash and index of the transaction
+        'hash.idx'"""
         self.utxo = {}
         """Dictionary with a list of Unspent Transaction Outputs (UTXO)
         in the blockchain which are emcumbered with one of one of the keys in
@@ -54,13 +58,14 @@ class Core(object):
         data/value"""
         for block in self.blockchain.blocks:
             for transaction in block.data:
-                for output in transaction.outputs:
+                for idx, output in enumerate(transaction.outputs):
                     if isinstance(output.data, Data):
                         #  TODO: Unclear how already spent outputs are
                         #  identified. (ti) <2017-05-16 22:02>
                         for address in self.wallet.addresses:
                             if output.script.unlock(address):
-                                self.utxo[address] = output.data
+                                utxo_reference = "{}.{}".format(transaction.hash, idx)
+                                self.utxo[utxo_reference] = output.data
 
     def get_transaction(self, data, address):
         """Will return a new :class:Transaction instance which will
@@ -90,13 +95,19 @@ class Core(object):
                 # will generate change
                 inputs = []
                 total = 0
-                for address in self.utxo:
-                    total += self.utxo[address].value
-                    #  TODO: Build correct transactions. Refer to a
-                    #  previous transaction, put correct Unlockscript.
-                    #  (ti) <2017-05-18 20:33>
-                    inputs.append(Input(self.utxo[address], UnlockScript(address), "1234" * 8, 1))
+                for tx_ref in self.utxo:
+                    tx_hash, idx = tx_ref.split(".")
+                    idx = int(idx)
+                    tx = self.blockchain.get_transaction(tx_hash)
+                    address = tx.outputs[idx].script._script
+                    total += tx.outputs[idx].data.value
+
+                    #  TODO: Build correct transactions with a working
+                    #  Unlockscript. #  (ti) <2017-05-18 20:33>
+                    inputs.append(Input(Coin(tx.outputs[idx].data.value), UnlockScript(address), tx_hash, idx))
                     change_address = address
+                    if total >= data.value:
+                        break
 
                 # Calculate difference between total and data.value to
                 # create a new output for the change we will receive.

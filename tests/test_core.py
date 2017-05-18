@@ -70,14 +70,14 @@ def test_get_transaction(coreA, coreB):
 
     # To settlte the requested amount of coins we need at least 2
     # inputs
-    assert len(tx.inputs) == 4
+    assert len(tx.inputs) == 2
 
     # The output should be two outputs.
     assert len(tx.outputs) == 2
     change = tx.outputs[0]
     spent = tx.outputs[1]
     assert spent.data.value == 1001
-    assert change.data.value == 2999
+    assert change.data.value == 999
 
     # Ensure that the change is readded to an address in out own wallet.
     assert change.script._script in list(coreA.wallet.addresses.keys())

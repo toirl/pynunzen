@@ -21,24 +21,36 @@ from pynunzen.ledger.blockchain import (
     GENESIS_BLOCK_ADDRESS
 )
 from pynunzen.ledger.block import generate_block_address, __block_max_size__
-from pynunzen.ledger.transaction import Transaction, Coin, Output, LockScript
+from pynunzen.ledger.transaction import Transaction, Coin, Output, LockScript, Input, UnlockScript, Data, CoinbaseInput
 from .test_wallet import alice_wallet, bob_wallet
 
 
 @pytest.fixture
 def blockchain(alice_wallet, bob_wallet):
     blockchain = Blockchain()
-    # 1. Generate 4 initial output in the first block for alice and bob
-    b1_transactions = []
-    for address in list(alice_wallet.addresses)[0:4]:
+
+    # 1. Generate a coinbasetransaction for for the first block
+    cb_tx_in = CoinbaseInput(Data("xxx"), UnlockScript(None), LockScript(None))
+    cb_tx_out = Output(Coin(1000), LockScript(list(alice_wallet.addresses)[0]))
+    cb_tx = Transaction([cb_tx_in], [cb_tx_out])
+
+    # 2. Generate 3 initial output in the first block for alice
+    b1_transactions = [cb_tx]
+    for address in list(alice_wallet.addresses)[1:4]:
         tx_output = Output(Coin(1000), LockScript(address))
         tx = Transaction([], [tx_output])
         b1_transactions.append(tx)
     b1 = generate_new_block(blockchain, b1_transactions)
     blockchain.append(b1)
 
-    b2_transactions = []
-    for address in list(bob_wallet.addresses)[0:4]:
+    # 3. Generate a coinbasetransaction for for the first block
+    cb_tx_in = CoinbaseInput(Data("xxx"), UnlockScript(None), LockScript(None))
+    cb_tx_out = Output(Coin(1500), LockScript(list(bob_wallet.addresses)[0]))
+    cb_tx = Transaction([cb_tx_in], [cb_tx_out])
+
+    # 4. Generate 3 initial output in the first block for alice
+    b2_transactions = [cb_tx]
+    for address in list(bob_wallet.addresses)[1:4]:
         tx_output = Output(Coin(1500), LockScript(address))
         tx = Transaction([], [tx_output])
         b2_transactions.append(tx)
@@ -50,7 +62,16 @@ def blockchain(alice_wallet, bob_wallet):
 @pytest.fixture
 def transaction():
     """Fixture for a empty blockchain."""
-    return Transaction([], [])
+    tx_input = Input(Data(""), UnlockScript(None), "dummytxhash", 0)
+    tx_output = Output(Data(""), LockScript(None))
+    return Transaction([tx_input], [tx_output])
+
+@pytest.fixture
+def coinbasetransaction():
+    """Fixture for a empty blockchain."""
+    tx_input = CoinbaseInput(Data("random"), LockScript(None), LockScript(None))
+    tx_output = Output(Coin(50), LockScript("dummyaddress"))
+    return Transaction([tx_input], [tx_output])
 
 
 @pytest.fixture
@@ -63,15 +84,15 @@ def blockchain_modified_genesis(blockchain):
 
 
 @pytest.fixture
-def block_with_modified_genesis(blockchain_modified_genesis, transaction):
+def block_with_modified_genesis(blockchain_modified_genesis, coinbasetransaction, transaction):
     """Fixture for a empty block."""
-    return generate_new_block(blockchain_modified_genesis, [transaction, transaction, transaction])
+    return generate_new_block(blockchain_modified_genesis, [coinbasetransaction, transaction, transaction])
 
 
 @pytest.fixture
-def block(blockchain, transaction):
+def block(blockchain, coinbasetransaction, transaction):
     """Fixture for a empty block."""
-    return generate_new_block(blockchain, [transaction, transaction, transaction])
+    return generate_new_block(blockchain, [coinbasetransaction, transaction, transaction])
 
 
 def test_generate_block_address():
@@ -91,10 +112,10 @@ def test_generate_genesis_block():
     assert block.data[0].inputs[0].data.value == GENESIS_BLOCK_INPUT
 
 
-def test_generate_new_block(blockchain, block, transaction):
+def test_generate_new_block(blockchain, block, coinbasetransaction, transaction):
     assert block.index == 3
     assert block.parent == blockchain.end.address
-    assert block.data == [transaction, transaction, transaction]
+    assert block.data == [coinbasetransaction, transaction, transaction]
 
 
 def test_block_validation_ok(blockchain, block):
@@ -131,8 +152,8 @@ def test_add_block(blockchain, block):
     assert blockchain.length == 4
 
 
-def test_add_block_fail(blockchain, block, transaction):
-    fail_block = generate_new_block(blockchain, [transaction])
+def test_add_block_fail(blockchain, block, coinbasetransaction, transaction):
+    fail_block = generate_new_block(blockchain, [coinbasetransaction, transaction])
     blockchain.append(block)
     with pytest.raises(ValueError):
         blockchain.append(fail_block)

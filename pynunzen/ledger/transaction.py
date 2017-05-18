@@ -259,8 +259,8 @@ class Transaction(object):
         """TODO: to be defined1. """
         self.version = __transaction_version__
         """Version of this transaction"""
-        self.time = utcts(datetime.datetime.utcnow())
-        """Time when the the transaction was created is unix timestamp"""
+        self.time = str(datetime.datetime.utcnow())
+        """Time when the the transaction was created"""
         self.inputs = inputs
         """One or more transaction inputs"""
         self.outputs = outputs

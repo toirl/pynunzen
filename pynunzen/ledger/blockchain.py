@@ -3,7 +3,7 @@
 import datetime
 from pynunzen.helpers import utcts
 from pynunzen.ledger.block import Block, generate_block_address
-from pynunzen.ledger.transaction import Transaction, Input, Data, UnlockScript
+from pynunzen.ledger.transaction import Transaction, CoinbaseInput, Output, Data, LockScript, UnlockScript
 
 __blockchain_version__ = "1.0"
 """Version of the blockchain. Used to versionize the blockchain."""
@@ -20,9 +20,10 @@ def generate_genesis_block():
     index = 0
 
     # Build empty pseudo input.
-    tx_in = Input(Data("NY-Times on 7.04.2017: U.S. Strikes Syria Over Chemical Attack"),
-                  UnlockScript(None), tx_hash="" * 32, utxo_idx=0)
-    transaction = Transaction([tx_in], [])
+    tx_in = CoinbaseInput(Data("NY-Times on 7.04.2017: U.S. Strikes Syria Over Chemical Attack"),
+                          UnlockScript(None), UnlockScript(None))
+    tx_out = Output(Data(""), LockScript(None))
+    transaction = Transaction([tx_in], [tx_out])
     data = [transaction]
 
     timestamp = utcts(datetime.datetime(2017, 4, 7, 16, 3, 0))

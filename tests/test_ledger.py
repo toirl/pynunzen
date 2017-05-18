@@ -118,6 +118,11 @@ def test_generate_new_block(blockchain, block, coinbasetransaction, transaction)
     assert block.data == [coinbasetransaction, transaction, transaction]
 
 
+def test_generate_new_block_non_coinbase_fail(blockchain, transaction):
+    with pytest.raises(ValueError):
+        generate_new_block(blockchain, [transaction, transaction])
+
+
 def test_block_validation_ok(blockchain, block):
     result = validate_block(blockchain, block)
     assert result is True

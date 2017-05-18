@@ -123,6 +123,18 @@ def test_generate_new_block_non_coinbase_fail(blockchain, transaction):
         generate_new_block(blockchain, [transaction, transaction])
 
 
+def test_generate_new_block_fail_length_output_coinbase(blockchain, coinbasetransaction, transaction):
+    with pytest.raises(ValueError):
+        coinbasetransaction.outputs = []
+        generate_new_block(blockchain, [coinbasetransaction, transaction])
+
+
+def test_generate_new_block_fail_length_input_coinbase(blockchain, coinbasetransaction, transaction):
+    with pytest.raises(ValueError):
+        coinbasetransaction.inputs = []
+        generate_new_block(blockchain, [coinbasetransaction, transaction])
+
+
 def test_block_validation_ok(blockchain, block):
     result = validate_block(blockchain, block)
     assert result is True

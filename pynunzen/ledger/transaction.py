@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import logging
+import datetime
 from decimal import Decimal, getcontext
+from pynunzen.helpers import double_sha256, utcts
 
 
 __transaction_version__ = "1.0"
@@ -9,11 +11,32 @@ log = logging.getLogger(__name__)
 getcontext().prec = 8
 
 
+def generate_transaction_hash(transaction):
+    """Will generate a hashvalue based on the input and outputs of the given transaction.
+
+    :transaction: TODO
+    :returns: TODO
+
+    """
+    value = str(transaction.time)
+    value += str(transaction.version)
+    for tx_in in transaction.inputs:
+        value += str(tx_in.data.value)
+        value += str(tx_in.script._script)
+        value += str(tx_in.tx_hash)
+        value += str(tx_in.utxo_idx)
+    for tx_out in transaction.outputs:
+        value += str(tx_out.data.value)
+        value += str(tx_out.script._script)
+    return double_sha256(value)
+
+
 def validate_transaction(transaction):
     """Will validate the given transaction. The transaction is validated against the following points:
 
        * The transaction’s syntax and data structure must be correct.
        * Neither lists of inputs or outputs are empty.
+       * Transaction hash validate
 
        TODO:
 
@@ -55,7 +78,7 @@ def validate_transaction(transaction):
     :returns: True or False
 
     """
-    checks = [_check_syntax, _check_io]
+    checks = [_check_syntax, _check_io, _check_hash]
     for check in checks:
         if check(transaction):
             continue
@@ -67,6 +90,17 @@ def validate_transaction(transaction):
     return True
 
 
+def _check_hash(transaction):
+    """The stored hash value of the transaction must be the same when rebuild from scratch
+
+    :transaction: :class:Transaction
+    :returns: True or False
+
+    """
+    tx_hash = transaction.hash
+    return tx_hash == generate_transaction_hash(transaction)
+
+
 def _check_syntax(transaction):
     """The transaction’s syntax and data structure must be correct.
 
@@ -75,10 +109,12 @@ def _check_syntax(transaction):
 
     """
     try:
+        assert hasattr(transaction, "time")
         assert hasattr(transaction, "version")
         assert hasattr(transaction, "inputs")
         assert hasattr(transaction, "outputs")
-        assert len(transaction.__dict__) == 3
+        assert hasattr(transaction, "hash")
+        assert len(transaction.__dict__) == 5
         return True
     except AssertionError:
         return False
@@ -223,7 +259,13 @@ class Transaction(object):
         """TODO: to be defined1. """
         self.version = __transaction_version__
         """Version of this transaction"""
+        self.time = utcts(datetime.datetime.utcnow())
+        """Time when the the transaction was created is unix timestamp"""
         self.inputs = inputs
         """One or more transaction inputs"""
         self.outputs = outputs
         """One or more transaction outputs"""
+        self.hash = generate_transaction_hash(self)
+        """Hash of this transaction, A hash is some kind of a address of
+        the transaction within the blockchain. It is used to link
+        outouts from inputs in other transactions."""

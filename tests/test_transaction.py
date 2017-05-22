@@ -9,11 +9,25 @@ Tests for `transaction` package.
 """
 
 import pytest
+from .test_ledger import blockchain
 from .test_wallet import alice_wallet, bob_wallet
 
 
 @pytest.fixture
-def transaction(alice_wallet, bob_wallet):
+def transaction(alice_wallet, bob_wallet, blockchain):
+    """Fixture for a empty Transaction."""
+    from pynunzen.ledger.transaction import Transaction, Input, Output, Coin, LockScript, UnlockScript
+    senderaddress = list(alice_wallet.addresses)[0]
+    receiveraddress = list(bob_wallet.addresses)[0]
+    tx_in = Input(Coin(1000), UnlockScript(senderaddress), tx_hash=blockchain.blocks[1].data[0].hash, utxo_idx=0)
+    tx_out1 = Output(Coin(999), LockScript(receiveraddress))
+    tx_out2 = Output(Coin(0.5), LockScript(senderaddress))
+    transaction = Transaction([tx_in], [tx_out1, tx_out2])
+    return transaction
+
+
+@pytest.fixture
+def transaction_wrong_ref(alice_wallet, bob_wallet, blockchain):
     """Fixture for a empty Transaction."""
     from pynunzen.ledger.transaction import Transaction, Input, Output, Coin, LockScript, UnlockScript
     senderaddress = list(alice_wallet.addresses)[0]
@@ -39,21 +53,20 @@ def coin_container():
     return Coin(0.0001)
 
 
-def test_generate_hash(transaction):
+def test_generate_hash(transaction_wrong_ref):
     from pynunzen.ledger.transaction import generate_transaction_hash
-    transaction.time = 1495142866
-    assert generate_transaction_hash(transaction) == "1511ce04090e426033a2ea906bc5e383a8c325ec806310fcf6023fca4552fa18"
+    transaction_wrong_ref.time = 1495142866
+    assert generate_transaction_hash(transaction_wrong_ref) == "1511ce04090e426033a2ea906bc5e383a8c325ec806310fcf6023fca4552fa18"
 
 
-def test_validate_transaction(transaction):
+def test_validate_transaction(transaction, blockchain):
     from pynunzen.ledger.transaction import validate_transaction
-    assert validate_transaction(transaction) is True
+    assert validate_transaction(transaction, blockchain) is True
 
 
-def test_validate_transaction_fails(transaction):
+def test_validate_transaction_fails(transaction_wrong_ref, blockchain):
     from pynunzen.ledger.transaction import validate_transaction
-    transaction.foo = False
-    assert validate_transaction(transaction) is False
+    assert validate_transaction(transaction, blockchain) is False
 
 
 def test_check_syntax(transaction):

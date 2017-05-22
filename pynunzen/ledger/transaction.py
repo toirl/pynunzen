@@ -3,7 +3,7 @@
 import logging
 import datetime
 from decimal import Decimal, getcontext
-from pynunzen.helpers import double_sha256, utcts
+from pynunzen.helpers import double_sha256
 
 
 __transaction_version__ = "1.0"
@@ -12,10 +12,12 @@ getcontext().prec = 8
 
 
 def generate_transaction_hash(transaction):
-    """Will generate a hashvalue based on the input and outputs of the given transaction.
+    """Will generate a hash based on the content of input and outputs of
+    the given transaction. The hash is used as a address of the
+    transaction within the blockchain.
 
-    :transaction: TODO
-    :returns: TODO
+    :transaction: :class:Transaction instance
+    :returns: hash
 
     """
     value = str(transaction.time)
@@ -31,15 +33,18 @@ def generate_transaction_hash(transaction):
     return double_sha256(value)
 
 
-def validate_transaction(transaction):
+def validate_transaction(transaction, blockchain):
     """Will validate the given transaction. The transaction is validated against the following points:
 
        * The transaction’s syntax and data structure must be correct.
        * Neither lists of inputs or outputs are empty.
-       * Transaction hash validate
+       * Transaction hash validate.
+       * For each input, the referenced output must exist.
 
        TODO:
 
+       * For each input, the referenced output cannot already be spent
+         (is in  UTXO).
        * The transaction size in bytes is less than MAX_BLOCK_SIZE.
        * Each output value, as well as the total, must be within the
          allowed range of values (less than 21m coins, more than 0).
@@ -64,8 +69,6 @@ def validate_transaction(transaction):
        * For each input, if the referenced output transaction is a
          coinbase output, it must have at least COINBASE_MATURITY (100)
          confirmations.
-       * For each input, the referenced output must exist and cannot
-         already be spent.
        * Using the referenced output transactions to get input values,
          check that each input value, as well as the sum, are in the
          allowed range of values (less than 21m coins, more than 0).
@@ -78,15 +81,42 @@ def validate_transaction(transaction):
     :returns: True or False
 
     """
-    checks = [_check_syntax, _check_io, _check_hash]
-    for check in checks:
+    trans_checks = [_check_syntax, _check_io, _check_hash]
+    for check in trans_checks:
         if check(transaction):
             continue
         else:
             log.error("Validation {} of transactoin failed".format(check.__name__))
             return False
-    else:
-        log.debug("Validation of transaction successfull")
+
+    trans_block_checks = [_check_referenced_hash]
+    for check in trans_block_checks:
+        if check(transaction, blockchain):
+            continue
+        else:
+            log.error("Validation {} of transactoin in context of the blockchain failed".format(check.__name__))
+            return False
+    log.debug("Validation of transaction successfull")
+    return True
+
+
+def _check_referenced_hash(transaction, blockchain):
+    """Will check if the referenced outout in the transaction inputs are
+    present in the blockchain and not already spent.
+
+    :transaction: TODO
+    :blockchain: TODO
+    :returns: TODO
+
+    """
+    for tx_in in transaction.inputs:
+        tx = blockchain.get_transaction(tx_in.tx_hash)
+        if tx:
+            # TODO: Implement check if outout is already spent. (ti) <2017-05-22 13:32>
+            pass
+        else:
+            # Transaction not found.
+            return False
     return True
 
 

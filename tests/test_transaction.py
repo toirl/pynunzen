@@ -64,8 +64,14 @@ def test_validate_transaction(transaction, blockchain):
     assert validate_transaction(transaction, blockchain) is True
 
 
-def test_validate_transaction_fails(transaction_wrong_ref, blockchain):
+def test_validate_transaction_fails_ref(transaction_wrong_ref, blockchain):
     from pynunzen.ledger.transaction import validate_transaction
+    assert validate_transaction(transaction_wrong_ref, blockchain) is False
+
+
+def test_validate_transaction_fails_syn(transaction, blockchain):
+    from pynunzen.ledger.transaction import validate_transaction
+    transaction.foo = False
     assert validate_transaction(transaction, blockchain) is False
 
 

@@ -10,4 +10,4 @@ cryptography==2.0.3
 PyYAML==3.12
 pytest==3.2.1
 pytz==2017.2
-coveralls==1.1
+coveralls==1.2.0
